@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# rc.local
+# /etc/rc.local
 #
 # This script is executed at the end of each multiuser runlevel.
 # Make sure that the script will "exit 0" on success or any other
