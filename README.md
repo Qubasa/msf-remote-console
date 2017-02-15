@@ -10,7 +10,7 @@ Although it gives you the ability to remotely use the msfrpcd server it is recom
 - It feels like the normal msfconsole!
 
 
-# How does it look like ?
+# How does it looks like ?
 ```
 [*] Connecting to server:
  Host => myDomain.com,
