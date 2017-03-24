@@ -2,7 +2,7 @@ import threading
 import time
 
 
-class ReadOutputThread (threading.Thread):
+class ReadInputThread (threading.Thread):
 
     command = ""
     path = ""
