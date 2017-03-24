@@ -3,8 +3,9 @@
 try:
     import time
     import sys
-    import thread
+    import threading
     from optparse import OptionParser
+    from ReadOutputThread import ReadOutputThread
 except ImportError as msg:
     print "[-] Library not installed: " + str(msg)
     print "[*] Try installing it with: pip install " + str(msg.message)
@@ -41,7 +42,6 @@ class Main:
 
     # Variables
     msfconsole = None
-    clearCommand = ""
 
     def __init__(self):
         ###
@@ -118,17 +118,13 @@ class Main:
 
     # Executes menu function
     def exec_menu(self, choice):
-
         # If empty input immediately go back to main menu
         if choice == '':
             self.menu_actions['main_menu'](self)
-
         else:
-
             # Execute selected function out of dictionary
             try:
                 self.menu_actions[choice](self)
-
             # If given input isn't in dictionary
             except KeyError:
                 print '[-] Invalid selection, please try again.'
@@ -138,13 +134,29 @@ class Main:
     # Main Menu
     def main_menu(self):
         try:
-            # Wait for user input
-            command = raw_input(self.msfconsole.get_path())
+            # Create read thread
+            readThread = ReadOutputThread(self.msfconsole.get_path())
+            readThread.start()
 
-            if command == "exit":
+            try:
+                while True:
+                    # Get command user types in
+                    command = readThread.get_command()
+
+                    # If command is not empty break out of loop
+                    if command:
+                        break
+
+                    # Run in background and read possible output from msfrpcd
+                    if self.msfconsole.read_output():
+                        # Found data to read
+                        readThread.set_path(self.msfconsole.get_path())
+            except ValueError:
+                pass
+
+            if command == "quit":
                 self.msfconsole.disconnect()
                 sys.exit()
-
             # If command not empty send it to msfrpcd
             if command:
                 self.msfconsole.exec_command(command)
@@ -168,4 +180,12 @@ class Main:
     }
 
 # Execute main
-Main()
+try:
+    Main()
+except KeyboardInterrupt:
+    print "[*] Interrpted execution"
+    exit(0)
+
+except AttributeError:
+    print "[-] You have to be connected to the server " + str(msg)
+    exit(1)

@@ -14,8 +14,6 @@ class MsfConsole:
 
     # Variables
     console_id = ""
-    current_path = ""
-    last_path = ""
 
     def __init__(self, username, password, port, host, ssl):
         self.username = username
@@ -55,7 +53,7 @@ class MsfConsole:
     def read_output(self):
         try:
             timer = 0
-            while timer <= 3:
+            while timer <= 5:
                 # Request information from msfrpcd
                 resource = self.client.call('console.read', self.console_id)
 
@@ -66,23 +64,19 @@ class MsfConsole:
 
                 # If msf command still running try requesting again
                 if resource['busy']:
-                    time.sleep(0.1)
+                    time.sleep(0.2)
+                    timer += 0.2
                     continue
 
-                # If msf path changed break out to save time
-                elif self.last_path != self.current_path:
-                    # print "Path is different use break: current: " + self.current_path + " last: " + self.last_path
+                # If resource is not busy quit reading
+                else:
                     break
 
-                # Else try again till 3 seconds reached
-                else:
-                    time.sleep(0.5)
-                    timer += 0.5
+                if timer >= 3:
+                    print "[-] Server response timed out"
+                    return False
 
             return True
-        except AttributeError:
-            print "[-] You have to be connected to the server"
-            return False
         except KeyError:
             print "[-] Has the console been destroyed ? "
             print resource if 'resource' in locals() else "Couldn't print error"
@@ -90,91 +84,69 @@ class MsfConsole:
 
     # Load resource file and execute every command
     def load_resource(self, path_to_resource):
+        # Read resource file
         try:
-            # Read resource file
-            try:
-                print "[*] Reading resource file..."
-                infile = open(path_to_resource, 'r')
-                commands = infile.readlines()
-                infile.close()
-            except IOError:
-                print "[-] Path to resource file not found"
-                return False
-
-            # Loop through every command and execute it
-            print "[*] Number of commands to execute: " + str(len(commands))
-            for line in commands:
-                self.console.write(line)
-                self.read_output()
-            print "[+] Finished executing resource script"
-
-            # List created jobs
-            self.list_jobs()
-            return True
-        except AttributeError:
-            print "[-] You have to be connected to the server"
+            print "[*] Reading resource file..."
+            infile = open(path_to_resource, 'r')
+            commands = infile.readlines()
+            infile.close()
+        except IOError:
+            print "[-] Path to resource file not found"
             return False
+
+        # Loop through every command and execute it
+        print "[*] Number of commands to execute: " + str(len(commands))
+        for line in commands:
+            self.console.write(line)
+            self.read_output()
+        print "[+] Finished executing resource script"
+
+        # List created jobs
+        self.list_jobs()
+        return True
 
     # List running jobs
     def list_jobs(self):
-        try:
-            # Request list of running jobs
-            resource = self.client.jobs.list
+        # Request list of running jobs
+        resource = self.client.jobs.list
 
-            # If no error occurred
-            if "error" not in resource:
-                print "[+] Listing jobs..."
-                print resource
-                return True
+        # If no error occurred
+        if "error" not in resource:
+            print "[+] Listing jobs..."
+            print resource
+            return True
 
-            # If error occurred
-            elif "error" in resource:
-                print "[-] An error has occurred in listing jobs.\n"
-                print resource
-                return False
-        except AttributeError:
-            print "[-] You have to be connected to the server"
+        # If error occurred
+        elif "error" in resource:
+            print "[-] An error has occurred in listing jobs.\n"
+            print resource
             return False
+
 
     # Execute command in msfconsole
     def exec_command(self, command):
-        try:
-            self.console.write(command)
-            self.get_path()
-            self.read_output()
-            return True
+        self.console.write(command)
+        self.get_path()
+        self.read_output()
+        return True
 
-        except AttributeError:
-            print "[-] You have to be connected to the server"
-            return False
 
     # Disconnect from msfconsole
     def disconnect(self):
-        try:
-            print "[*] Quitting..."
-            self.console.destroy()
-            self.client.client.close()
-        except AttributeError:
-            print "[-] You have to be connected to the server"
-            return False
+        print "[*] Closing session..."
+        self.console.destroy()
+        self.client.client.close()
+
 
     # Get current msfconsole path
     def get_path(self):
-        try:
-            # Request data from server
-            resource = self.client.call('console.list')
+        # Request data from server
+        resource = self.client.call('console.list')
 
-            # Filter the path out of it
-            for console in resource['consoles']:
-                if console['id'] == self.console_id:
-                    s = console['prompt']
-                    extracted_path = ''.join(c for c in s if c in string.printable)
+        # Filter the path out of it
+        for console in resource['consoles']:
+            if console['id'] == self.console_id:
+                s = console['prompt']
+                extracted_path = ''.join(c for c in s if c in string.printable)
+                return extracted_path
 
-                    # Check if path of console changed if true save old path and set new current path
-                    if extracted_path != self.current_path:
-                        self.last_path = self.current_path
-                        self.current_path = extracted_path
-                    return extracted_path
-        except AttributeError:
-            print "[-] You have to be connected to the server"
-            return ""
