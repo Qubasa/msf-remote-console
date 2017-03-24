@@ -5,7 +5,7 @@ from metasploit.msfrpc import MsfRpcClient
 from metasploit.msfrpc import MsfRpcError
 from ssl import SSLError
 
-#
+
 class MsfConsole:
 
     # Objects

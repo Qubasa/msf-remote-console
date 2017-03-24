@@ -31,7 +31,7 @@ except ImportError as msg:
     print "[*] \"cd pymetasploit && sudo python setup.py install\""
     sys.exit()
 
-#
+
 class Main:
     # Hardcoded credentials
     username = "msf"
