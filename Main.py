@@ -5,7 +5,7 @@ try:
     import sys
     import threading
     from optparse import OptionParser
-    from ReadOutputThread import ReadOutputThread
+    from ReadInputThread import ReadInputThread
 except ImportError as msg:
     print "[-] Library not installed: " + str(msg)
     print "[*] Try installing it with: pip install " + str(msg.message)
@@ -135,7 +135,7 @@ class Main:
     def main_menu(self):
         try:
             # Create read thread
-            readThread = ReadOutputThread(self.msfconsole.get_path())
+            readThread = ReadInputThread(self.msfconsole.get_path())
             readThread.start()
 
             try:
