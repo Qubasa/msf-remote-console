@@ -76,7 +76,7 @@ python Main.py --ssl --port 55553 --host 127.0.0.1 --user msf --pass msf
 
 
 # How do I install it ?
-First you must have metasploit installed. If you cant use the installer because you have no graphical environment or whatever use this guide from rapid7: [Setting Up a Metasploit Development Environment](https://github.com/rapid7/metasploit-framework/wiki/Setting-Up-a-Metasploit-Development-Environment).
+First you must have metasploit installed. If you can't use the installer because you have no graphical environment or whatever use this guide from rapid7: [Setting Up a Metasploit Development Environment](https://github.com/rapid7/metasploit-framework/wiki/Setting-Up-a-Metasploit-Development-Environment).
 This will install all needed dependencies:
 ```
 git clone https://github.com/allfro/pymetasploit.git pymetasploit
@@ -89,7 +89,7 @@ cd metasploit-framework/
 ruby msfrpcd -U msf -P msf -p 55553
 ```
 
-And its probably a good idea to start and connect to the postgresql database:
+And it's probably a good idea to start and connect to the postgresql database:
 By the way change the password in the echo line.
 ```
 sudo update-rc.d postgresql enable
