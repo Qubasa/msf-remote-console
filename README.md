@@ -9,7 +9,7 @@ To find the necessary path cd into the metasploit-framework directory and execut
 ```
 $ rvm gemdir
 /usr/local/rvm/gems/ruby-2.5.1@metasploit-framework
-$ export GEM_HOME=/usr/local/rvm/gems/ruby-2.5.1@metasploit-framework
+$ rvm use 2.5.1@metasploit-framework
 ```
 
 
