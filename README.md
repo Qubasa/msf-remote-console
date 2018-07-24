@@ -102,8 +102,15 @@ python Main.py --ssl --port 55553 --host 127.0.0.1 --user msf --pass msf
 
 
 # How do I install it ?
-First you must have metasploit installed. If you can't use the installer because you have no graphical environment or whatever use this guide from rapid7: [Setting Up a Metasploit Development Environment](https://github.com/rapid7/metasploit-framework/wiki/Setting-Up-a-Metasploit-Development-Environment).
+First you must have metasploit installed. If you can't use the installer because you have no graphical environment or whatever use this guide from rapid7: [Nightly installers](https://github.com/rapid7/metasploit-framework/wiki/Nightly-Installers).
 This will install all needed dependencies:
+```
+curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
+  chmod 755 msfinstall && \
+  ./msfinstall
+```
+
+
 ```
 git clone https://github.com/allfro/pymetasploit.git pymetasploit
 cd pymetasploit && sudo python setup.py install
